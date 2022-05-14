@@ -1,7 +1,7 @@
 $url = 'https://devblogs.microsoft.com/landingpage/'
 $number = (gh issue list -s open --json number | convertfrom-json).number
-# updatedAt returns UTC, issue comments returns local time, why?
-$updatedAt = [datetime](gh issue view $number --json updatedAt | convertfrom-json).updatedAt
+# createdAt returns UTC, issue comments returns local time, why?
+$createdAt = [datetime](gh issue view $number --json createdAt | convertfrom-json).createdAt
 
 $comments = (gh issue view $number -c --json comments | convertfrom-json).comments
 if($comments.Count -gt 1){
@@ -10,7 +10,7 @@ if($comments.Count -gt 1){
     $currenttimediff = (Get-TimeZone).baseutcoffset.hours
     $lastupdate = $lastupdate.addhours(-$currenttimediff.hours)
 }else{
-    $lastupdate = $updatedAt
+    $lastupdate = $createdAt
 }
 
 $feed =[xml](invoke-webrequest -Uri $url -UseBasicParsing)
