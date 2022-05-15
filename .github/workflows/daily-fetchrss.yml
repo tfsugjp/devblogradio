@@ -6,7 +6,7 @@ name: CI
 
 on:
   schedule:
-  - cron: "2 0 * * *"
+  - cron: "2 0 * * 2-6"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -17,6 +17,8 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: windows-latest
+    permissions:
+      issues: write
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -27,3 +29,6 @@ jobs:
         run: | 
            ./feedsync.ps1
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTHOR: ${{ github.event.pusher.name }}
