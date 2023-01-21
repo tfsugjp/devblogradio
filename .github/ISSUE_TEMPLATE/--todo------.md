@@ -1,7 +1,7 @@
 ---
 name: 放送todoテンプレート
 about: ラジオ放送時のイベントやることテンプレート
-title: xx回放送分
+title: yyyy/mm/dd放送分
 labels: plan
 assignees: ''
 
