@@ -1,3 +1,44 @@
+function Get-SummarywithOpenAI(
+    [string]$blogurl
+)
+{
+    $Token = $ENV:OPENAI_API_KEY
+    $Uri   = $ENV:OPENAI_API_URL
+    $PostBody = @{
+        max_tokens = 800
+        temperature = 0.7
+        top_p = 0.95
+        frequency_penalty = 0
+        presence_penalty = 0
+        stop = @('##')
+    }
+
+    $Header =@{
+      "api-key" = $Token
+      "Content-Type" ="application/json"
+    }
+
+    $PostBody.messages = @(
+        @{
+            role = 'user'
+            content = '以下のURLを要約してください。本文が日本語以外である場合、日本語で200文字以内に要約してください。'+$blogurl
+        }
+    )
+
+    try {
+        $response = Invoke-RestMethod -Method Post -Uri $Uri `
+            -Headers $Header `
+            -Body ([System.Text.Encoding]::UTF8.GetBytes(($PostBody | ConvertTo-Json -Compress)))
+
+       $Answer = $response.choices[0].message.content
+   }
+    catch {
+        $Answer = '要約に失敗しました。'
+    }
+
+    return $Answer
+}
+
 $url = 'https://devblogs.microsoft.com/landingpage/'
 $number = (gh issue list -s open --json number | convertfrom-json).number
 # createdAt returns UTC, issue comments returns local time, why?
@@ -19,7 +60,8 @@ foreach ($item in $feed.rss.channel.item) {
     if($item.creator -ne 'Raymond Chen' -and $pubDate -gt $lastupdate) {
         $title = $item.title
         $link = $item.link 
-        $comment = "[$title]($link)"
+        $summary = Get-SummarywithOpenAI $link
+        $comment = "[$title]($link)\n" + $summary
         gh issue comment $number -b $comment
     }
 }
