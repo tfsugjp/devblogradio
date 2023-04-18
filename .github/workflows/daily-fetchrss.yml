@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Fetch devblog
 
 # Controls when the workflow will run
 
@@ -10,6 +10,9 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+env:
+  env_var: ${{ vars.OpenAI }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -32,3 +35,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AUTHOR: ${{ github.event.pusher.name }}
+          OPENAI_API_TOKEN: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_URL: ${{ vars.OPENAI_API_URL }}
