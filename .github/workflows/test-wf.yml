@@ -18,7 +18,7 @@ jobs:
 
       - name: Sync Feeds
         run: | 
-           echo "variable from shell environment : $env_var"
+           [System.Environment]::GetEnvironmentVariables()
            ./test_wf.ps1
         shell: pwsh
         env:
