@@ -1,0 +1,26 @@
+name: wf_test
+
+on:
+   workflow_dispatch:
+
+env:
+  env_var: ${{ vars.OpenAI }}
+
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Sync Feeds
+        run: | 
+           ./test_wf.ps1
+        shell: pwsh
+        env:
+          AUTHOR: ${{ github.event.pusher.name }}
+          OPENAI_API_TOKEN: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_URL: ${{ vars.OPENAI_API_URL }}
