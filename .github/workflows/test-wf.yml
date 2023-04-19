@@ -14,6 +14,9 @@ jobs:
 
       - name: test variable
         run: | 
-           ./test_wf.ps1 -apitoken ${{ secrets.OPENAI_API_KEY }} -apiurl ${{ vars.OPENAI_API_URL }}
+           ./test_wf.ps1 
            [System.Environment]::GetEnvironmentVariables()
         shell: pwsh
+        env:
+         OPEN_API_TOKEN: ${{ secrets.OPENAI_API_KEY }}
+         OPEN_API_UEL:  ${{ secrets.OPENAI_API_URL }}
