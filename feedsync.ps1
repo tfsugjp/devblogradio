@@ -2,7 +2,7 @@ function Get-SummarywithOpenAI(
     [string]$blogurl
 )
 {
-    $Token = $ENV:OPENAI_API_KEY
+    $Token = $ENV:OPEN_API_TOKEN
     $Uri   = $ENV:OPENAI_API_URL
     $PostBody = @{
         max_tokens = 800
@@ -63,5 +63,7 @@ foreach ($item in $feed.rss.channel.item) {
         $summary = Get-SummarywithOpenAI $link
         $comment = "[$title]($link)  " + $summary
         gh issue comment $number -b $comment
+        # avoid OpenAI API's rate limit(12 times per minitue in GPT-4)
+        start-sleep -Seconds 5
     }
 }
