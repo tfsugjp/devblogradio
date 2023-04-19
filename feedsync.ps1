@@ -61,7 +61,7 @@ foreach ($item in $feed.rss.channel.item) {
         $title = $item.title
         $link = $item.link 
         $summary = Get-SummarywithOpenAI $link
-        $comment = "[$title]($link)\n" + $summary
+        $comment = "[$title]($link)  " + $summary
         gh issue comment $number -b $comment
     }
 }
