@@ -1,14 +1,7 @@
-param(
-    [String] [Parameter (Mandatory=$true)] $apitoken,
-    [String] [Parameter (Mandatory=$true)] $apiUrl
-)
-
-if([string]::isnullorempty($apitoken) -eq $true){
+if([string]::isnullorempty($env:OPEN_API_TOKEN) -eq $true){
   write-host 'API Token is null'
 }
 
-if([string]::isnullorempty($apiUrl) -eq $true){
+if([string]::isnullorempty($env:OPEN_API_URL) -eq $true){
   write-host 'API endpoint is null'
-}else{
-  write-host $apiendpoint
 }
