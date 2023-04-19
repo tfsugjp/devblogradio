@@ -1,5 +1,5 @@
 $apitoken = $ENV:OPENAI_API_TOKEN
-if([string]::isnullorempty($ENV:OPENAI_API_TOKEN) -eq $true){
+if([string]::isnullorempty( $ENV:OPENAI_API_TOKEN ) -eq $true){
   write-host 'API Token is null'
 }
 
