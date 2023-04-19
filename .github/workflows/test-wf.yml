@@ -11,12 +11,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Sync Feeds
+
+      - name: test variable
         run: | 
-           [System.Environment]::GetEnvironmentVariables()
            ./test_wf.ps1 -apitoken ${{ secrets.OPENAI_API_KEY }} -apiurl ${{ env.OPENAI_API_URL }}
+           [System.Environment]::GetEnvironmentVariables()
         shell: pwsh
-        env:
-          AUTHOR: ${{ github.event.pusher.name }}
-          OPENAI_API_TOKEN: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_API_URL: ${{ env.OPENAI.OPENAI_API_URL }}
