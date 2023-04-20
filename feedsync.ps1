@@ -2,7 +2,7 @@ function Get-SummarywithOpenAI(
     [string]$blogurl
 )
 {
-    $Token = $ENV:OPEN_API_TOKEN
+    $Token = $ENV:OPENAI_API_TOKEN
     $Uri   = $ENV:OPENAI_API_URL
     $PostBody = @{
         max_tokens = 800
