@@ -22,4 +22,3 @@ https://devblogs.microsoft.com/powershell/feed/
 https://devblogs.microsoft.com/semantic-kernel/feed/
 https://devblogs.microsoft.com/nuget/feed/
 https://devblogs.microsoft.com/windowsai/feed/
-

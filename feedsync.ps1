@@ -57,6 +57,9 @@ if($comments.Count -gt 1){
 
 foreach($url in $urls) {
     write-host $url
+    if ([string]::IsNullOrWhiteSpace($url) -eq $true) {
+        continue
+    }
     $feed =[xml](invoke-webrequest -Uri $url -UseBasicParsing)
     foreach ($item in $feed.rss.channel.item) {
         $pubDate = [datetime]$item.pubDate
