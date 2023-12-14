@@ -352,3 +352,4 @@ MigrationBackup/
 # ignore idea 
 .sarif/
 .idea/
+settings.json
