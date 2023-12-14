@@ -39,31 +39,34 @@ function Get-SummarywithOpenAI(
     return $Answer
 }
 
-$url = 'https://devblogs.microsoft.com/landingpage/'
-$number = (gh issue list -s open --json number | convertfrom-json).number
-# createdAt returns UTC, issue comments returns local time, why?
-$createdAt = [datetime](gh issue view $number --json createdAt | convertfrom-json).createdAt
+$urls = Get-Content -Path .\feedsource.txt
 
-$comments = (gh issue view $number -c --json comments | convertfrom-json).comments
-if($comments.Count -gt 1){
-    $lastupdate = [datetime]($comments | Sort-Object $_.createdAt -Bottom 1 | Select-Object createdAt).createdAt
-    #gh issue returns local timezone
-    $currenttimediff = (Get-TimeZone).baseutcoffset.hours
-    $lastupdate = $lastupdate.addhours(-$currenttimediff.hours)
-}else{
-    $lastupdate = $createdAt
-}
-
-$feed =[xml](invoke-webrequest -Uri $url -UseBasicParsing)
-foreach ($item in $feed.rss.channel.item) {
-    $pubDate = [datetime]$item.pubDate
-    if($item.creator -ne 'Raymond Chen' -and $pubDate -gt $lastupdate) {
-        $title = $item.title
-        $link = $item.link 
-        $summary = Get-SummarywithOpenAI $link
-        $comment = "[$title]($link)  " + $summary
-        gh issue comment $number -b $comment
-        # avoid OpenAI API's rate limit(12 times per minitue in GPT-4)
-        start-sleep -Seconds 5
+foreach($url in $urls) {
+    $number = (gh issue list -s open --json number | convertfrom-json).number
+    # createdAt returns UTC, issue comments returns local time, why?
+    $createdAt = [datetime](gh issue view $number --json createdAt | convertfrom-json).createdAt
+    
+    $comments = (gh issue view $number -c --json comments | convertfrom-json).comments
+    if($comments.Count -gt 1){
+        $lastupdate = [datetime]($comments | Sort-Object $_.createdAt -Bottom 1 | Select-Object createdAt).createdAt
+        #gh issue returns local timezone
+        $currenttimediff = (Get-TimeZone).baseutcoffset.hours
+        $lastupdate = $lastupdate.addhours(-$currenttimediff.hours)
+    }else{
+        $lastupdate = $createdAt
+    }
+    
+    $feed =[xml](invoke-webrequest -Uri $url -UseBasicParsing)
+    foreach ($item in $feed.rss.channel.item) {
+        $pubDate = [datetime]$item.pubDate
+        if($item.creator -ne 'Raymond Chen' -and $pubDate -gt $lastupdate) {
+            $title = $item.title
+            $link = $item.link 
+            $summary = Get-SummarywithOpenAI $link
+            $comment = "[$title]($link)  " + $summary
+            gh issue comment $number -b $comment
+            # avoid OpenAI API's rate limit(12 times per minitue in GPT-4)
+            start-sleep -Seconds 5
+        }
     }
 }
