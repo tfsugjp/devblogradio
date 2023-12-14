@@ -3,7 +3,7 @@ function Get-SummarywithOpenAI(
 )
 {
     $Token = $ENV:OPENAI_API_TOKEN
-    $Uri   = "$($env:OPENAI_API_BASE)/openai/deployments/$($env:OPENAI_API_DEPLOY)/chat/completions?api-version=2023-09-01-preview"
+    $Uri   = "https://$($env:OPENAI_API_BASE).openai.azure.com/openai/deployments/$($env:OPENAI_API_DEPLOY)/chat/completions?api-version=2023-09-01-preview"
     $PostBody = @{
         max_tokens = 800
         temperature = 0.7
