@@ -66,9 +66,8 @@ foreach($url in $urls) {
         if($pubDate -gt $lastupdate) {
             $title = $item.title
             $link = $item.link 
-            # temporary disable(for cost)
-#            $summary = Get-SummarywithOpenAI $link
-            $comment = "[$title]($link)  " 
+            $summary = Get-SummarywithOpenAI $link
+            $comment = "[$title]($link)  " + $summary
             gh issue comment $number -b $comment
             # avoid OpenAI API's rate limit(12 times per minitue in GPT-4)
             start-sleep -Seconds 5
