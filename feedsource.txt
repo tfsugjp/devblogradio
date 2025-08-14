@@ -26,4 +26,4 @@ https://devblogs.microsoft.com/powershell/feed/
 https://devblogs.microsoft.com/semantic-kernel/feed/
 https://devblogs.microsoft.com/windowsai/feed/
 https://devblogs.microsoft.com/ifdef-windows/feed/
-https://devblogs.microsoft.com/go/feed/
+https://devblogs.microsoft.com/foundry/feed/
