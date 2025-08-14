@@ -49,11 +49,14 @@ $comments = (gh issue view $number -c --json comments | convertfrom-json).commen
 if($comments.Count -gt 1){
     $lastupdate = [datetime]($comments | Sort-Object $_.createdAt -Bottom 1 | Select-Object createdAt).createdAt
     #gh issue returns local timezone
-    $currenttimediff = (Get-TimeZone).baseutcoffset.hours
-    $lastupdate = $lastupdate.addhours(-$currenttimediff.hours)
+    $currenttimediff = (Get-TimeZone).BaseUtcOffset.TotalHours
+    $lastupdate = $lastupdate.AddHours(-$currenttimediff)
 }else{
     $lastupdate = $createdAt
 }
+
+# Keep track of URLs we've already processed across all feeds in this run
+$seenLinks = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
 foreach($url in $urls) {
     write-host $url
@@ -62,10 +65,19 @@ foreach($url in $urls) {
     }
     $feed =[xml](invoke-webrequest -Uri $url -UseBasicParsing)
     foreach ($item in $feed.rss.channel.item) {
+        $link = [string]$item.link
+        if ([string]::IsNullOrWhiteSpace($link)) {
+            continue
+        }
+
+        # Deduplicate across feeds: if we've already seen this link, skip it
+        if (-not $seenLinks.Add($link)) {
+            continue
+        }
+
         $pubDate = [datetime]$item.pubDate
         if($pubDate -gt $lastupdate) {
             $title = $item.title
-            $link = $item.link 
             $summary = Get-SummarywithOpenAI $link
             $comment = "[$title]($link)  " + $summary
             gh issue comment $number -b $comment
