@@ -3,7 +3,7 @@ function Get-SummarywithOpenAI(
 )
 {
     $Token = $ENV:OPENAI_API_TOKEN
-    $Uri   = "https://$($env:OPENAI_API_BASE).openai.azure.com/openai/deployments/$($env:OPENAI_API_DEPLOY)/chat/completions?api-version=2025-04-01-preview"
+    $Uri   = "https://$($env:OPENAI_API_BASE).cognitiveservices.azure.com/openai/deployments/$($env:OPENAI_API_DEPLOY)/chat/completions?api-version=2024-05-01-preview"
     $PostBody = @{
         max_tokens = 800
         temperature = 0.7
@@ -21,7 +21,7 @@ function Get-SummarywithOpenAI(
     $PostBody.messages = @(
         @{
             role = 'user'
-            content = '以下のURLを要約してください。本文が日本語以外である場合、日本語で200文字以内に要約してください。'+$blogurl
+            content = '以下のURL本文を要約してください。本文が日本語以外である場合、日本語で200文字以内に要約してください。本文が英語で1000words以上ある場合は最初と最後の段落を忠実に日本語翻訳し、段落として記載してください。重要と思われる部分の概要をまとめてください。'+$blogurl
         }
     )
 
@@ -86,4 +86,5 @@ foreach($url in $urls) {
         }
     }
 }
+
 
