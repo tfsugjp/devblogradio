@@ -11,6 +11,7 @@ function Get-SummarywithOpenAI(
         frequency_penalty = 0
         presence_penalty = 0
         stop = @('##')
+        model = $env:OPENAI_API_DEPLOY
     }
 
     $Header =@{
@@ -19,7 +20,6 @@ function Get-SummarywithOpenAI(
     }
 
     $PostBody.messages = @(
-        model = $($env:OPENAI_API_DEPLOY)
         messages = @(
           @{
             role = 'user'
@@ -89,6 +89,7 @@ foreach($url in $urls) {
         }
     }
 }
+
 
 
 
