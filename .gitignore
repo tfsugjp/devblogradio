@@ -353,3 +353,81 @@ MigrationBackup/
 .sarif/
 .idea/
 settings.json
+
+# =========================
+# Node.js / npm
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# npm cache (rarely needed in repo)
+.npm/
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Playwright (artifacts)
+# =========================
+# If you use Playwright test runner, these are commonly generated
+playwright-report/
+test-results/
+blob-report/
+traces/
+downloads/
+
+# If you explicitly save screenshots/videos/traces to custom dirs
+screenshots/
+videos/
+
+# Playwright browsers are not stored in repo
+# (Usually installed in cache locations, but keep this anyway if you set local path)
+.playwright/
+
+# =========================
+# Build outputs / temp
+# =========================
+dist/
+build/
+out/
+.tmp/
+temp/
+
+# =========================
+# Output files (your scraper results)
+# =========================
+output.md
+result.json
+*.md
+*.json
+
+# If you want to keep some markdown/json in repo, instead do:
+# *.md
+# *.json
+# !README.md
+# !docs/**/*.md
+# !samples/**/*.json
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+.idea/
+*.swp
+*.swo
