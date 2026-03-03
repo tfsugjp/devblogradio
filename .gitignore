@@ -408,6 +408,10 @@ output.md
 result.json
 *.md
 *.json
+!.github/skills/**/SKILL.md
+!.github/agents/**/*.agent.md
+!package.json
+!package-lock.json
 
 # If you want to keep some markdown/json in repo, instead do:
 # *.md
