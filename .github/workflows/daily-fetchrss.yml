@@ -25,42 +25,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          node-version: '24'
-          cache: 'npm'
+          dotnet-version: '8.0.x'
 
-      - name: Install npm dependencies
-        run: npm ci
+      - name: Restore scraper dependencies
+        run: dotnet restore ./src/scrapecsharp/scrapsummary/scraper/scraper.csproj
 
-      - name: Get Playwright version
-        id: playwright-version
-        run: echo "PLAYWRIGHT_VERSION=$(npx playwright --version | awk '{print $2}')" >> $GITHUB_OUTPUT
+      - name: Build scraper
+        run: dotnet build ./src/scrapecsharp/scrapsummary/scraper/scraper.csproj --configuration Release --no-restore
 
       - name: Cache Playwright browsers
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.PLAYWRIGHT_VERSION }}
+          key: playwright-dotnet-${{ runner.os }}-1.58.0
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium --with-deps
+        run: ./src/scrapecsharp/scrapsummary/scraper/bin/Release/net8.0/playwright.ps1 install --with-deps chromium
+        shell: pwsh
 
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+        run: ./src/scrapecsharp/scrapsummary/scraper/bin/Release/net8.0/playwright.ps1 install-deps chromium
+        shell: pwsh
 
       - name: Sync Feeds
-        run: | 
-           ./feedsync.ps1
-        shell: pwsh
+        run: dotnet run --project ./src/scrapecsharp/scrapsummary/scraper/scraper.csproj --configuration Release --no-build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AUTHOR: ${{ github.event.pusher.name }}
           OPENAI_API_TOKEN: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_API_URL:  ${{ secrets.OPENAI_API_URL }}
           OPENAI_API_DEPLOY: ${{ secrets.OPENAI_API_DEPLOY }}
           OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
