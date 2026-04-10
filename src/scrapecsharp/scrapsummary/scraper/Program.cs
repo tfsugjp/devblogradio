@@ -125,7 +125,7 @@ internal sealed class FeedSyncApplication : IAsyncDisposable
 					var comment = $"[{title}]({link})  {summary}";
 					Console.WriteLine($"Posting comment for article: {title}");
 					await _issueService.AddCommentAsync(targetIssue.Number, comment, cancellationToken);
-					await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+					await Task.Delay(TimeSpan.FromSeconds(5d), cancellationToken);
 				}
 			}
 		}
@@ -407,7 +407,7 @@ internal sealed class OpenAiSummaryService
 			: blogContent;
 
 		var prompt = $"""
-以下のブログ記事を要約してください。本文が日本語以外である場合、日本語で200文字以内に要約してください。本文が英語で1000words以上ある場合は最初と最後の段落を忠実に日本語翻訳し、段落として記載してください。重要と思われる部分の概要をまとめてください。
+以下のブログ記事を要約してください。本文が日本語以外である場合、日本語で300文字以内に要約してください。本文が英語で1000words以上ある場合は最初と最後の段落を忠実に日本語翻訳し、段落として記載してください。プログラムコードブロックがある場合、プログラムの解説も要約に含めてください。
 
 タイトル: {blogTitle}
 URL: {blogUrl}
@@ -437,20 +437,43 @@ URL: {blogUrl}
 		try
 		{
 			using var response = await _httpClient.SendAsync(request, cancellationToken);
+			var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 			if (!response.IsSuccessStatusCode)
 			{
+				Console.Error.WriteLine(
+					$"OpenAI request failed. StatusCode={(int)response.StatusCode} ({response.StatusCode}), Reason={response.ReasonPhrase ?? "(none)"}, Endpoint={_endpoint}, Deployment={_deployment}");
+				Console.Error.WriteLine($"OpenAI error response: {TruncateForLog(responseBody, 4000)}");
 				return AppDefaults.SummaryFailedMessage;
 			}
 
-			await using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
-			var completion = await JsonSerializer.DeserializeAsync<ChatCompletionResponse>(contentStream, JsonOptions.Default, cancellationToken);
+			var completion = JsonSerializer.Deserialize<ChatCompletionResponse>(responseBody, JsonOptions.Default);
 			var message = completion?.Choices?.FirstOrDefault()?.Message?.Content;
-			return string.IsNullOrWhiteSpace(message) ? AppDefaults.SummaryFailedMessage : message.Trim();
+			if (string.IsNullOrWhiteSpace(message))
+			{
+				Console.Error.WriteLine(
+					$"OpenAI response did not contain a summary message. Endpoint={_endpoint}, Deployment={_deployment}");
+				Console.Error.WriteLine($"OpenAI raw response: {TruncateForLog(responseBody, 4000)}");
+				return AppDefaults.SummaryFailedMessage;
+			}
+
+			return message.Trim();
 		}
-		catch
+		catch (Exception ex)
 		{
+			Console.Error.WriteLine(
+				$"OpenAI request exception: {ex.GetType().FullName}: {ex.Message}. Endpoint={_endpoint}, Deployment={_deployment}");
 			return AppDefaults.SummaryFailedMessage;
 		}
+	}
+
+	private static string TruncateForLog(string? value, int maxLength)
+	{
+		if (string.IsNullOrEmpty(value) || value.Length <= maxLength)
+		{
+			return value ?? string.Empty;
+		}
+
+		return value[..maxLength] + "...(truncated)";
 	}
 }
 
