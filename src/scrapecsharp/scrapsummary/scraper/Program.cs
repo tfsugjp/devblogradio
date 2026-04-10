@@ -125,7 +125,7 @@ internal sealed class FeedSyncApplication : IAsyncDisposable
 					var comment = $"[{title}]({link})  {summary}";
 					Console.WriteLine($"Posting comment for article: {title}");
 					await _issueService.AddCommentAsync(targetIssue.Number, comment, cancellationToken);
-                   await Task.Delay(TimeSpan.FromSeconds(5d), cancellationToken);
+					await Task.Delay(TimeSpan.FromSeconds(5d), cancellationToken);
 				}
 			}
 		}
@@ -437,18 +437,18 @@ URL: {blogUrl}
 		try
 		{
 			using var response = await _httpClient.SendAsync(request, cancellationToken);
-           var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+			var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 			if (!response.IsSuccessStatusCode)
 			{
-                Console.Error.WriteLine(
+				Console.Error.WriteLine(
 					$"OpenAI request failed. StatusCode={(int)response.StatusCode} ({response.StatusCode}), Reason={response.ReasonPhrase ?? "(none)"}, Endpoint={_endpoint}, Deployment={_deployment}");
 				Console.Error.WriteLine($"OpenAI error response: {TruncateForLog(responseBody, 4000)}");
 				return AppDefaults.SummaryFailedMessage;
 			}
 
-         var completion = JsonSerializer.Deserialize<ChatCompletionResponse>(responseBody, JsonOptions.Default);
+			var completion = JsonSerializer.Deserialize<ChatCompletionResponse>(responseBody, JsonOptions.Default);
 			var message = completion?.Choices?.FirstOrDefault()?.Message?.Content;
-           if (string.IsNullOrWhiteSpace(message))
+			if (string.IsNullOrWhiteSpace(message))
 			{
 				Console.Error.WriteLine(
 					$"OpenAI response did not contain a summary message. Endpoint={_endpoint}, Deployment={_deployment}");
@@ -458,9 +458,9 @@ URL: {blogUrl}
 
 			return message.Trim();
 		}
-     catch (Exception ex)
+		catch (Exception ex)
 		{
-            Console.Error.WriteLine(
+			Console.Error.WriteLine(
 				$"OpenAI request exception: {ex.GetType().FullName}: {ex.Message}. Endpoint={_endpoint}, Deployment={_deployment}");
 			return AppDefaults.SummaryFailedMessage;
 		}
