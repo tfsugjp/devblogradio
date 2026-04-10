@@ -125,7 +125,7 @@ internal sealed class FeedSyncApplication : IAsyncDisposable
 					var comment = $"[{title}]({link})  {summary}";
 					Console.WriteLine($"Posting comment for article: {title}");
 					await _issueService.AddCommentAsync(targetIssue.Number, comment, cancellationToken);
-					await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                   await Task.Delay(TimeSpan.FromSeconds(5d), cancellationToken);
 				}
 			}
 		}
