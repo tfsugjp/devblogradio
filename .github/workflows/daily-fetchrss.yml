@@ -55,12 +55,12 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: ./src/scrapecsharp/scrapsummary/scraper/bin/Release/net8.0/playwright.ps1 install --with-deps chromium
+        run: ./src/scrapecsharp/scrapsummary/scraper/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
         shell: pwsh
 
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: ./src/scrapecsharp/scrapsummary/scraper/bin/Release/net8.0/playwright.ps1 install-deps chromium
+        run: ./src/scrapecsharp/scrapsummary/scraper/bin/Release/net10.0/playwright.ps1 install-deps chromium
         shell: pwsh
 
       - name: Sync Feeds
