@@ -250,13 +250,29 @@ internal sealed class BlogContentFetcher : IAsyncDisposable
 
 	public static async Task<BlogContentFetcher> CreateAsync()
 	{
-		var playwright = await Playwright.CreateAsync();
-		var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+		IPlaywright? playwright = null;
+		try
 		{
-			Headless = true
-		});
+			playwright = await Playwright.CreateAsync();
+			var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+			{
+				Headless = true
+			});
 
-		return new BlogContentFetcher(playwright, browser);
+			return new BlogContentFetcher(playwright, browser);
+		}
+		catch (PlaywrightException ex)
+		{
+			playwright?.Dispose();
+			throw new InvalidOperationException(
+				"Playwright Chromium is not installed. Run `playwright install --with-deps chromium` to install it.",
+				ex);
+		}
+		catch (Exception)
+		{
+			playwright?.Dispose();
+			throw;
+		}
 	}
 
 	public async Task<BlogContentResult> FetchAsync(string url, CancellationToken cancellationToken)
