@@ -51,7 +51,7 @@ jobs:
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-dotnet-${{ runner.os }}-${{ hashFiles('src/scrapecsharp/scrapsummary/scraper/scraper.csproj') }}
+          key: playwright-dotnet-${{ runner.os }}-chromium-${{ hashFiles('src/scrapecsharp/scrapsummary/scraper/**/*.csproj', 'src/scrapecsharp/scrapsummary/scraper/**/*.props', 'src/scrapecsharp/scrapsummary/scraper/**/*.targets') }}
 
       - name: Install Playwright browsers
         run: ./src/scrapecsharp/scrapsummary/scraper/bin/Release/net10.0/playwright.ps1 install --with-deps chromium

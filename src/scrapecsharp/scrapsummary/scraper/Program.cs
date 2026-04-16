@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using CodeHollow.FeedReader;
 using Microsoft.Playwright;
 using Octokit;
@@ -551,7 +552,7 @@ internal sealed record GitHubRepository(string Owner, string Name)
 internal sealed record BlogContentResult(string Title, string Content, string Error);
 
 internal sealed record ChatCompletionRequest(
-	int MaxTokens,
+	[property: JsonPropertyName("max_completion_tokens")] int MaxTokens,
 	double Temperature,
 	double TopP,
 	int FrequencyPenalty,
