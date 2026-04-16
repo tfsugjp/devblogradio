@@ -264,9 +264,10 @@ internal sealed class BlogContentFetcher : IAsyncDisposable
 		catch (PlaywrightException ex)
 		{
 			playwright?.Dispose();
-			throw new InvalidOperationException(
-				"Playwright Chromium is not installed. Run `playwright install --with-deps chromium` to install it.",
-				ex);
+			var message = ex.Message.Contains("Executable doesn't exist", StringComparison.OrdinalIgnoreCase)
+				? "Playwright Chromium is not installed. Run `playwright install --with-deps chromium` to install it."
+				: $"Playwright failed to start Chromium: {ex.Message}";
+			throw new InvalidOperationException(message, ex);
 		}
 		catch (Exception)
 		{
