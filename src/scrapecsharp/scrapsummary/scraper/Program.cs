@@ -440,7 +440,6 @@ URL: {blogUrl}
 			0.95,
 			0,
 			0,
-			["##"],
 			_deployment,
 			[new ChatMessage("user", prompt)]);
 
@@ -557,7 +556,6 @@ internal sealed record ChatCompletionRequest(
 	double TopP,
 	int FrequencyPenalty,
 	int PresencePenalty,
-	string[] Stop,
 	string Model,
 	ChatMessage[] Messages);
 
