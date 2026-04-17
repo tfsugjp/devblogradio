@@ -435,11 +435,7 @@ URL: {blogUrl}
 """;
 
 		var payload = new ChatCompletionRequest(
-			800,
-			0.9,
-			0.95,
-			0,
-			0,
+			4000,
 			_deployment,
 			[new ChatMessage("user", prompt)]);
 
@@ -464,11 +460,12 @@ URL: {blogUrl}
 			}
 
 			var completion = JsonSerializer.Deserialize<ChatCompletionResponse>(responseBody, JsonOptions.Default);
-			var message = completion?.Choices?.FirstOrDefault()?.Message?.Content;
+			var choice = completion?.Choices?.FirstOrDefault();
+			var message = choice?.Message?.Content;
 			if (string.IsNullOrWhiteSpace(message))
 			{
 				Console.Error.WriteLine(
-					$"OpenAI response did not contain a summary message. Endpoint={_endpoint}, Deployment={_deployment}");
+					$"OpenAI response did not contain a summary message. Endpoint={_endpoint}, Deployment={_deployment}, FinishReason={choice?.FinishReason ?? "(none)"}");
 				Console.Error.WriteLine($"OpenAI raw response: {TruncateForLog(responseBody, 4000)}");
 				return AppDefaults.SummaryFailedMessage;
 			}
@@ -551,11 +548,7 @@ internal sealed record GitHubRepository(string Owner, string Name)
 internal sealed record BlogContentResult(string Title, string Content, string Error);
 
 internal sealed record ChatCompletionRequest(
-	[property: JsonPropertyName("max_completion_tokens")] int MaxTokens,
-	double Temperature,
-	double TopP,
-	int FrequencyPenalty,
-	int PresencePenalty,
+	[property: JsonPropertyName("max_completion_tokens")] int MaxCompletionTokens,
 	string Model,
 	ChatMessage[] Messages);
 
@@ -563,7 +556,9 @@ internal sealed record ChatMessage(string Role, string Content);
 
 internal sealed record ChatCompletionResponse(ChatChoice[]? Choices);
 
-internal sealed record ChatChoice(ChatMessage? Message);
+internal sealed record ChatChoice(
+	ChatMessage? Message,
+	[property: JsonPropertyName("finish_reason")] string? FinishReason);
 
 internal static class JsonOptions
 {
